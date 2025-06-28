@@ -93,7 +93,7 @@ npm run prod
 | GET    | /articles/\:id | Ambil detail artikel      |
 | POST   | /pageviews     | Tambah page view baru     |
 | ...    | ...            | Lihat dokumentasi Swagger |
-* [Postmant](https://documenter.getpostman.com/view/2822867/2sB2xFfT5t)
+* [Postman](https://documenter.getpostman.com/view/2822867/2sB2xFfT5t)
 * [Swagger](http://localhost:3000/api-docs/)
 ---
 
