@@ -2,7 +2,7 @@ import {IRoutes} from "@interfaces/route.interfaces";
 import cors from 'cors';
 import express from 'express';
 import {logger, stream} from "@services/utils/logger";
-import { connect, set, disconnect } from 'mongoose';
+import {connect, set, disconnect} from 'mongoose';
 import {dbConnection} from "@config/database";
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
@@ -15,6 +15,7 @@ import cookieParser from 'cookie-parser';
 import errorMiddleware from "@middlewares/error.middleware";
 import * as console from "node:console";
 import YAML from 'yamljs';
+import * as path from "node:path";
 
 
 class App {
@@ -42,6 +43,7 @@ class App {
             logger.info(`=================================`);
         });
     }
+
     public async closeDatabaseConnection(): Promise<void> {
         try {
             await disconnect();
@@ -59,13 +61,13 @@ class App {
     }
 
     private initializeMiddlewares() {
-        this.app.use(morgan(LOG_FORMAT, { stream }));
-        this.app.use(cors({ origin: ORIGIN, credentials: CREDENTIALS }));
+        this.app.use(morgan(LOG_FORMAT, {stream}));
+        this.app.use(cors({origin: ORIGIN, credentials: CREDENTIALS}));
         this.app.use(hpp());
         this.app.use(helmet());
         this.app.use(compression());
         this.app.use(express.json());
-        this.app.use(express.urlencoded({ extended: true }));
+        this.app.use(express.urlencoded({extended: true}));
         this.app.use(cookieParser());
     }
 
@@ -77,7 +79,23 @@ class App {
 
     private initializeSwagger() {
         const swaggerDocument = YAML.load('src/swagger/swagger.yaml');
-        this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+        this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
+            swaggerOptions: {
+                // ✅ Hindari kesalahan auto-detect protokol
+                url: '/api-docs/swagger.yaml',
+                validatorUrl: null,
+                docExpansion: 'none',
+                displayRequestDuration: true,
+                schemes: ['http'],
+            }
+        }));
+
+        // ✅ Sajikan file swagger.yaml agar bisa diakses langsung
+        this.app.get('/api-docs/swagger.yaml', (req, res) => {
+            res.setHeader('Content-Type', 'application/yaml');
+            res.sendFile('swagger.yaml', {root: path.resolve('src/swagger')});
+        });
     }
 
     private initializeErrorHandling() {

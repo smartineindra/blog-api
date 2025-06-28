@@ -94,7 +94,8 @@ npm run prod
 | POST   | /pageviews     | Tambah page view baru     |
 | ...    | ...            | Lihat dokumentasi Swagger |
 * [Postman](https://documenter.getpostman.com/view/2822867/2sB2xFfT5t)
-* [Swagger](http://localhost:3000/api-docs/)
+* [Swagger](https://blog.codestage.my.id/api-docs/)
+* [Online Testing](https://blog.codestage.my.id/)
 ---
 
 ## 🛠 Tools dan Library
