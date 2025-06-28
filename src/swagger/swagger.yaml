@@ -1,0 +1,316 @@
+openapi: 3.0.0
+info:
+  title: CMS Blog API
+  version: 1.0.0
+  description: API untuk autentikasi, manajemen artikel, pengguna, dan pelacakan page view.
+externalDocs:
+  description: Untuk dokumentasi Postman ada disini
+  url: https://documenter.getpostman.com/view/2822867/2sB2xFfT5t
+servers:
+  - url: http://localhost:3000/
+    description: Local development server
+tags:
+  - name: auth
+    description: API untuk autentikasi
+  - name: user
+    description: API untuk  manajemen pengguna
+  - name: article
+    description: API untuk  manajemen artikel
+  - name: page-view
+    description: API untuk  manajemen pelacakan
+
+paths:
+  /signup:
+    post:
+      tags:
+        - auth
+      summary: Register user baru
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserDto'
+      responses:
+        '201':
+          description: User berhasil dibuat
+  /login:
+    post:
+      tags:
+        - auth
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDto'
+      responses:
+        '200':
+          description: Login berhasil
+  /logout:
+    post:
+      tags:
+        - auth
+      summary: Logout user
+      responses:
+        '200':
+          description: Logout berhasil
+  /article:
+    get:
+      tags:
+        - article
+      summary: Ambil semua artikel
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer }
+        - in: query
+          name: limit
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Daftar artikel
+    post:
+      tags:
+        - article
+      summary: Buat artikel baru
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateArticleDto'
+      responses:
+        '201':
+          description: Artikel berhasil dibuat
+  /article/{id}:
+    get:
+      tags:
+        - article
+      summary: Ambil artikel berdasarkan ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Detail artikel
+    put:
+      tags:
+        - article
+      summary: Update artikel
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateArticleDto'
+      responses:
+        '200':
+          description: Artikel berhasil diupdate
+    delete:
+      tags:
+        - article
+      summary: Hapus artikel
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Artikel berhasil dihapus
+
+  /user:
+    get:
+      tags:
+        - user
+      summary: Ambil semua user
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer }
+        - in: query
+          name: limit
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Daftar user
+    post:
+      tags:
+        - user
+      summary: Buat user (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserDto'
+      responses:
+        '201':
+          description: User berhasil dibuat
+
+  /user/{id}:
+    get:
+      tags:
+        - user
+      summary: Ambil user berdasarkan ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Detail user
+
+  /user/me/update:
+    put:
+      tags:
+        - user
+      summary: Update data user sendiri
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserDto'
+      responses:
+        '200':
+          description: User berhasil diupdate
+
+  /user/me/delete:
+    delete:
+      tags:
+        - user
+      summary: Hapus akun user sendiri
+      responses:
+        '200':
+          description: Akun berhasil dihapus
+
+  /page-view:
+    post:
+      tags:
+        - page-view
+      summary: Catat page view
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePageViewDto'
+      responses:
+        '201':
+          description: Page view tercatat
+
+  /page-view/count:
+    get:
+      tags:
+        - page-view
+      summary: Hitung jumlah page view
+      parameters:
+        - in: query
+          name: article
+          required: false
+          schema: { type: string }
+        - in: query
+          name: startAt
+          required: false
+          schema: { type: string }
+        - in: query
+          name: endAt
+          required: false
+          schema: { type: string }
+      responses:
+        '200':
+          description: Jumlah page view berhasil dihitung
+
+  /page-view/aggregate-date:
+    get:
+      tags:
+        - page-view
+      summary: Aggregasi page view per tanggal
+      parameters:
+        - in: query
+          name: article
+          required: false
+          schema: { type: string }
+        - in: query
+          name: startAt
+          required: false
+          schema: { type: string }
+        - in: query
+          name: endAt
+          required: false
+          schema: { type: string }
+        - in: query
+          name: interval
+          required: false
+          schema: { type: string }
+      responses:
+        '200':
+          description: Data agregasi page view
+
+components:
+  schemas:
+    CreateUserDto:
+      type: object
+      required: [ name, email, password ]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    LoginDto:
+      type: object
+      required: [ email, password ]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    CreateArticleDto:
+      type: object
+      required: [ title, content ]
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+
+    UpdateArticleDto:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+
+    UpdateUserDto:
+      type: object
+      properties:
+        name:
+          type: string
+        password:
+          type: string
+
+    CreatePageViewDto:
+      type: object
+      required: [ article ]
+      properties:
+        article:
+          type: string
+          description: ID artikel
