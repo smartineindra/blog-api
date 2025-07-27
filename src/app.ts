@@ -82,7 +82,6 @@ class App {
 
         this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
             swaggerOptions: {
-                // ✅ Hindari kesalahan auto-detect protokol
                 url: '/api-docs/swagger.yaml',
                 validatorUrl: null,
                 docExpansion: 'none',
@@ -91,7 +90,6 @@ class App {
             }
         }));
 
-        // ✅ Sajikan file swagger.yaml agar bisa diakses langsung
         this.app.get('/api-docs/swagger.yaml', (req, res) => {
             res.setHeader('Content-Type', 'application/yaml');
             res.sendFile('swagger.yaml', {root: path.resolve('src/swagger')});
